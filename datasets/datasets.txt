@@ -1,0 +1,35 @@
+Zbiory danych:
+
+Zbiór podstawowy
+dataset.csv - 1000 rekordów, 5000 cech, 2 klasy, dane zbalansowane
+
+Dane niezbalansowane
+imbalanced1.csv - poziom niezbalanowania 1:9, 1000 rekordów, 1000 cech, 2 klasy
+imbalanced2.csv - poziom niezbalanowania 2:8, 1000 rekordów, 1000 cech, 2 klasy
+imbalanced3.csv - poziom niezbalanowania 3:7, 1000 rekordów, 1000 cech, 2 klasy
+imbalanced4.csv - poziom niezbalanowania 4:6, 1000 rekordów, 1000 cech, 2 klasy
+
+Przypadek 3-klasowy
+triple1.csv - poziom niezbalanowania 1:9, 1000 rekordów, 1000 cech, 3 klasy
+triple2.csv - poziom niezbalanowania 2:8, 1000 rekordów, 1000 cech, 3 klasy
+triple3.csv - poziom niezbalanowania 3:7, 1000 rekordów, 1000 cech, 3 klasy
+triple4.csv - poziom niezbalanowania 4:6, 1000 rekordów, 1000 cech, 3 klasy
+triple5.csv - dane zbalansowane, 1000 rekordów, 1000 cech, 3 klasy
+
+
+Eksperyment 1
+Badanie pod kątem wielkości zbioru danych n= {100, 200, 300, …, 5000} atrybutów.
+Dane dataset.csv - bierzemy kolejno 100, 200, ... pierwszych cech
+
+_____________
+Dla kolejnych eksperymentów wybór ilości atrybutów (wstępne założenie: 1000)
+
+Eksperyment 2
+Badanie pod kątem przypadku 2 klasowego dla danych zbalasnowanych i niezbalansowanych
+Dane: imbalanced.csv
+
+Eksperyment 3
+Badanie pod kątem przypadku 3 klasowego dla danych zbalasnowanych i niezbalansowanych
+Dane: triple.csv
+
+
