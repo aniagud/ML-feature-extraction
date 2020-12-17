@@ -17,7 +17,6 @@ from imblearn.metrics import geometric_mean_score
 from collections import Counter
 
 
-
 E_VARIANCE = 0.9
 RANDOM_STATE = 1410
 accuracy_function = accuracy_score
@@ -61,7 +60,7 @@ print('Eksperyment 1 - wielowymiarowosc danych')
 dataset = pd.read_csv("./datasets/dataset.csv", header=None)
 # dataset_desc = dataset.describe(include="all")
 
-features = [500,100,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,
+features = [5000,100,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,
             1600,1800,2000,2250,2500,2750,3000,3500,4000,4500,5000]
 
 y = dataset.iloc[:, -1].to_numpy()  # array with labels (class)
@@ -126,3 +125,66 @@ for feature in features:
 # 0.5782658716699065
 # 0.7494570845752054
 # SVM
+
+
+# Eksperyment 2
+print('Eksperyment 2 - dane niezbalansowane')
+
+accuracy_function = balanced_accuracy_score
+
+# read files
+imbalanced1 = pd.read_csv("./datasets/imbalanced1.csv", header=None)
+imbalanced2 = pd.read_csv("./datasets/imbalanced2.csv", header=None)
+imbalanced3 = pd.read_csv("./datasets/imbalanced3.csv", header=None)
+imbalanced4 = pd.read_csv("./datasets/imbalanced4.csv", header=None)
+
+imbalanced_datasets = [('imbalanced1', imbalanced1),
+                       ('imbalanced2', imbalanced2),
+                       ('imbalanced3', imbalanced3),
+                       ('imbalanced4', imbalanced4)]
+
+scoresIMB = {}
+scores2 = {}
+for c_method, _ in classification_methods:
+    scores2[c_method] = [[] for _ in range(len(dim_reduction_methods))]
+
+for data_name, dataset in imbalanced_datasets:
+
+    X = dataset.iloc[:, :-1].to_numpy()  # array of features arrays
+    y = dataset.iloc[:, -1].to_numpy()  # array with labels (class)
+    print(data_name)
+    print(X.shape)
+
+    scoresIMB[data_name] = scores2
+
+    for c_method_name, c_method in classification_methods:
+        print(c_method_name)
+        for i, (r_method_name, r_method) in enumerate(dim_reduction_methods):
+            for train_index, test_index in rskf.split(X, y):
+                X_train, X_test = X[train_index], X[test_index]
+                y_train, y_test = y[train_index], y[test_index]
+
+                r_method.fit(X_train, y_train)
+
+                X_train_transformed = r_method.transform(X_train)
+                X_test_transformed = r_method.transform(X_test)
+
+                c_method.fit(X_train_transformed, y_train)
+                y_pred = c_method.predict(X_test_transformed)
+                scoresIMB[data_name][c_method_name][i].append(accuracy_function(y_test, y_pred))
+
+        # no features extraction
+        scoresIMB[data_name][c_method_name].append([])
+        for train_index, test_index in rskf.split(X, y):
+            X_train, X_test = X[train_index], X[test_index]
+            y_train, y_test = y[train_index], y[test_index]
+            c_method.fit(X_train, y_train)
+            y_pred = c_method.predict(X_test)
+            scoresIMB[data_name][c_method_name][len(dim_reduction_methods)].append(
+                accuracy_function(y_test, y_pred)
+            )
+
+        for i in range(0, len(dim_reduction_methods) + 1):
+            print(np.mean(scoresIMB[data_name][c_method_name][i]))
+
+
