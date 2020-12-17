@@ -188,3 +188,62 @@ for data_name, dataset in imbalanced_datasets:
             print(np.mean(scoresIMB[data_name][c_method_name][i]))
 
 
+# Eksperyment 3
+print('Eksperyment 3 - przypadek 3-klasowy')
+
+# read files
+triple1 = pd.read_csv("./datasets/triple1.csv", header=None)
+triple2 = pd.read_csv("./datasets/triple2.csv", header=None)
+triple3 = pd.read_csv("./datasets/triple3.csv", header=None)
+triple4 = pd.read_csv("./datasets/triple4.csv", header=None)
+triple5 = pd.read_csv("./datasets/triple5.csv", header=None)
+
+triple_datasets = [('triple1', triple1),
+                   ('triple2', triple2),
+                   ('triple3', triple3),
+                   ('triple4', triple4),
+                   ('triple5', triple5)]
+
+scoresTR = {}
+scores3 = {}
+for c_method, _ in classification_methods:
+    scores3[c_method] = [[] for _ in range(len(dim_reduction_methods))]
+
+for data_name, dataset in triple_datasets:
+
+    X = dataset.iloc[:, :-1].to_numpy()  # array of features arrays
+    y = dataset.iloc[:, -1].to_numpy()  # array with labels (class)
+    print(data_name)
+    print(X.shape)
+
+    scoresTR[data_name] = scores3
+
+    for c_method_name, c_method in classification_methods:
+        print(c_method_name)
+        for i, (r_method_name, r_method) in enumerate(dim_reduction_methods):
+            for train_index, test_index in rskf.split(X, y):
+                X_train, X_test = X[train_index], X[test_index]
+                y_train, y_test = y[train_index], y[test_index]
+
+                r_method.fit(X_train, y_train)
+
+                X_train_transformed = r_method.transform(X_train)
+                X_test_transformed = r_method.transform(X_test)
+
+                c_method.fit(X_train_transformed, y_train)
+                y_pred = c_method.predict(X_test_transformed)
+                scoresTR[data_name][c_method_name][i].append(accuracy_function(y_test, y_pred))
+
+        # no features extraction
+        scoresTR[data_name][c_method_name].append([])
+        for train_index, test_index in rskf.split(X, y):
+            X_train, X_test = X[train_index], X[test_index]
+            y_train, y_test = y[train_index], y[test_index]
+            c_method.fit(X_train, y_train)
+            y_pred = c_method.predict(X_test)
+            scoresTR[data_name][c_method_name][len(dim_reduction_methods)].append(
+                accuracy_function(y_test, y_pred)
+            )
+
+        for i in range(0, len(dim_reduction_methods) + 1):
+            print(np.mean(scoresTR[data_name][c_method_name][i]))
